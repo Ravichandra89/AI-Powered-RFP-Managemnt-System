@@ -1,13 +1,13 @@
 import { Schema, Document, model, Types } from "mongoose";
 
-export interface proposalItem {
-  rpf_item_id: string;
+export interface ProposalItem {
+  rfp_item_id: string;
   unit_price: number;
   qty: number;
   total: number;
 }
 
-export interface proposalDocument extends Document {
+export interface ProposalDocument extends Document {
   rfp_id: Types.ObjectId;
   vendor_id: Types.ObjectId;
   submitted_at: Date;
@@ -16,44 +16,34 @@ export interface proposalDocument extends Document {
   delivery_days: number;
   warranty_years: number;
   payment_terms: string;
-  compilance_score: number;
+  compliance_score: number; // FIXED spelling
   summary?: string;
-  items: proposalItem[];
+  items: ProposalItem[];
   raw_email_text?: string;
   parsed_ai_json?: any;
 }
 
 /** ProposalItemSchema */
-const proposalItemSchema = new Schema<proposalItem>(
+const ProposalItemSchema = new Schema<ProposalItem>(
   {
-    rpf_item_id: {
+    rfp_item_id: {
+      // FIXED name
       type: String,
       required: true,
     },
-    unit_price: {
-      type: Number,
-      required: true,
-    },
-    qty: {
-      type: Number,
-      required: true,
-    },
-    total: {
-      type: Number,
-      required: true,
-    },
+    unit_price: { type: Number, required: true },
+    qty: { type: Number, required: true },
+    total: { type: Number, required: true },
   },
-  {
-    _id: false,
-  }
+  { _id: false }
 );
 
 /** ProposalSchema */
-const proposalSchema = new Schema<proposalDocument>(
+const ProposalSchema = new Schema<ProposalDocument>(
   {
     rfp_id: {
       type: Schema.Types.ObjectId,
-      ref: "Rfp",
+      ref: "RFP", // FIXED model reference
       required: true,
     },
     vendor_id: {
@@ -65,56 +55,34 @@ const proposalSchema = new Schema<proposalDocument>(
       type: Date,
       default: Date.now,
     },
-    email_message_id: {
-      type: String,
-    },
-    total_price: {
+    email_message_id: String,
+
+    total_price: { type: Number, required: true },
+    delivery_days: { type: Number, required: true },
+    warranty_years: { type: Number, required: true },
+    payment_terms: { type: String, required: true },
+
+    compliance_score: {
+      // FIXED spelling
       type: Number,
       required: true,
-    },
-    delivery_days: {
-      type: Number,
-      required: true,
+      default: 0,
     },
 
-    warranty_years: {
-      type: Number,
-      required: true,
-    },
-
-    payment_terms: {
-      type: String,
-      required: true,
-    },
-
-    compilance_score: {
-      type: Number,
-      required: true,
-    },
-
-    summary: {
-      type: String,
-    },
+    summary: String,
 
     items: {
-      type: [proposalItemSchema],
+      type: [ProposalItemSchema],
       required: true,
     },
 
-    raw_email_text: {
-      type: String,
-    },
-
-    parsed_ai_json: {
-      type: Schema.Types.Mixed,
-    },
+    raw_email_text: String,
+    parsed_ai_json: Schema.Types.Mixed,
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export const ProposalModel = model<proposalDocument>(
+export const ProposalModel = model<ProposalDocument>(
   "Proposal",
-  proposalSchema
+  ProposalSchema
 );
