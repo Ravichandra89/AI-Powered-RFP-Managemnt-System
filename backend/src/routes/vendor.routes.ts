@@ -1,20 +1,16 @@
 import { Router } from "express";
 import {
-  parseRfpFromText,
-  createRfpController,
-  getAllRfps,
-  getRfpController,
-  sendRfpToSelectedVendors,
-  compareRfpController,
-} from "../controllers/rfp.controller";
+  createVendorController,
+  getVendorListController,
+  getVendorByIdController,
+  deactivateVendorController,
+} from "../controllers/vendor.controller";
 
 const vendorRouter = Router();
 
-vendorRouter.post("/parse", parseRfpFromText);
-vendorRouter.post("/", createRfpController);
-vendorRouter.get("/", getAllRfps);
-vendorRouter.get("/:rfpId", getRfpController);
-vendorRouter.post("/:rfpId/send", sendRfpToSelectedVendors);
-vendorRouter.post("/:rfpId/compare", compareRfpController);
+vendorRouter.post("/", createVendorController);
+vendorRouter.get("/", getVendorListController);
+vendorRouter.get("/:vendorId", getVendorByIdController);
+vendorRouter.patch("/:vendorId/deactivate", deactivateVendorController);
 
 export default vendorRouter;
