@@ -7,7 +7,7 @@ const ProposalSchema = z.object({
   delivery_days: z.number(),
   warranty_years: z.number(),
   payment_terms: z.string(),
-  compliance_score: z.number().optional(),
+  compliance_score: z.number().nullable().optional(), // 🔥 FIXED
   summary: z.string().optional(),
   items: z.array(
     z.object({
@@ -20,32 +20,39 @@ const ProposalSchema = z.object({
 });
 
 export type ParsedProposal = z.infer<typeof ProposalSchema>;
-
 const parser = StructuredOutputParser.fromZodSchema(ProposalSchema);
 
+/* ----------------------- LLM MODEL ----------------------- */
+/* Use a valid OpenAI model */
 const model = new ChatOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-40-mini",
+  model: "gpt-4o-mini", // 🔥 UPDATED from non-existent model
   temperature: 0,
 });
 
+/* --------------------- PROMPT TEMPLATE -------------------- */
 const generatePrompt = (emailText: string, rfpContext: string) => `
-You are an AI procurement analyst. Extract structured proposal details
-from the vendor's email.
+You are an AI procurement analyst.
 
-Use the following RFP context to correctly map proposal line items:
+Extract structured fields from the vendor's proposal email.
+Use the RFP context to map line items correctly.
 
-RFP CONTEXT:
+If any value is missing, infer logically.
+If compliance score is unknown, return **0** (number), NEVER null.
+
+RFP ITEMS CONTEXT:
 ${rfpContext}
 
-Return ONLY valid JSON in this format:
+Return ONLY valid JSON using this exact structure:
 ${parser.getFormatInstructions()}
 
-Vendor Email:
+Email Body:
 """
 ${emailText}
-"""`;
+"""
+`;
 
+/* --------------------- MAIN PARSER FN --------------------- */
 export const parseProposalFromEmail = async (
   emailText: string,
   rfpContext: string
@@ -54,17 +61,31 @@ export const parseProposalFromEmail = async (
     const prompt = generatePrompt(emailText, rfpContext);
     const result = await model.invoke(prompt);
 
-    // Normalize result.content into a string
-    const rawContent = Array.isArray(result.content)
-      ? result.content
-          .map((block) => ("text" in block ? block.text : String(block)))
-          .join(" ")
-      : result.content;
+    // Normalize the LLM response
+    const rawContent =
+      typeof result.content === "string"
+        ? result.content
+        : Array.isArray(result.content)
+        ? result.content
+            .map((b) => ("text" in b ? b.text : String(b)))
+            .join(" ")
+        : JSON.stringify(result.content);
 
-    const parsed = await parser.parse(rawContent);
+    // Clean backticks if the model wraps JSON in ```
+    const cleaned = rawContent.replace(/```json|```/g, "").trim();
+
+    const parsed = await parser.parse(cleaned);
+
+    // 🔥 Ensure compliance_score is a usable number
+    if (parsed.compliance_score == null) {
+      parsed.compliance_score = 0;
+    }
+
     return parsed;
   } catch (error) {
     console.error("Failed to parse vendor proposal:", error);
-    throw new Error("Proposal parsing failed");
+    throw new Error(
+      "Proposal parsing failed — invalid email format or model output"
+    );
   }
 };

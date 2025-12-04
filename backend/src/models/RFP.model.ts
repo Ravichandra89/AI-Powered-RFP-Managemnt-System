@@ -1,4 +1,4 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 export interface rfpItem {
   item_id: string;
@@ -19,11 +19,12 @@ export interface rfpDocument extends Document {
   items: rfpItem[];
 }
 
+/** RFP ITEM SCHEMA */
 const rfpItemSchema = new Schema<rfpItem>(
   {
     item_id: {
       type: String,
-      required: true,
+      default: () => new Types.ObjectId().toString(), // 🟢 FIXED
     },
     name: {
       type: String,
@@ -39,11 +40,10 @@ const rfpItemSchema = new Schema<rfpItem>(
       default: {},
     },
   },
-  {
-    _id: false,
-  }
+  { _id: false }
 );
 
+/** RFP SCHEMA */
 const rfpSchema = new Schema<rfpDocument>(
   {
     title: {
@@ -83,10 +83,7 @@ const rfpSchema = new Schema<rfpDocument>(
       required: true,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-// Exporting RFPModel
 export const RFPModel = model<rfpDocument>("Rfp", rfpSchema);

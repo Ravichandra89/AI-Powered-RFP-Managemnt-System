@@ -1,16 +1,19 @@
 import nodemailer from "nodemailer";
 import { rfpDocument } from "../models/RFP.model";
 import { VendorDocument } from "../models/Vendor.model";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_SMTP_HOST as string,
-  port: Number(process.env.EMAIL_SMTP_PORT),
-  secure: Number(process.env.EMAIL_SMTP_PORT) === 465,
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
-    user: process.env.EMAIL_SMTP_USER as string,
-    pass: process.env.EMAIL_SMTP_PASS as string,
+    user: process.env.EMAIL_SMTP_USER,
+    pass: process.env.EMAIL_SMTP_PASS,
   },
-} as nodemailer.TransportOptions);
+});
 
 export const verifyEmailTransporter = async () => {
   try {
@@ -57,6 +60,8 @@ export const sendRfpEmail = async ({
 }: SendRfpEmailParams): Promise<void> => {
   const from = fromEmail || process.env.EMAIL_SMTP_USER;
   const to = vendor.email;
+
+  console.log("Sending email to: ", to);
 
   if (!from) {
     throw new Error("No FROM email configured (check EMAIL_SMTP_USER in env).");

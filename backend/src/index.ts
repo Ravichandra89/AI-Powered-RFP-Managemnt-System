@@ -6,6 +6,8 @@ import proposalRouter from "./routes/proposal.routes";
 import vendorRouter from "./routes/vendor.routes";
 import rfpRouter from "./routes/rfp.routes";
 import cors from "cors";
+import { verifyEmailTransporter } from "./services/email.service";
+import { startEmailListener } from "./services/emailListner.service";
 
 // Load env variables
 dotenv.config();
@@ -22,6 +24,9 @@ connectDB()
     console.error("Database connection failed:", err);
     process.exit(1);
   });
+
+verifyEmailTransporter();
+startEmailListener();
 
 // Routes
 app.use("/api/v1/proposals", proposalRouter);

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   parseAndCreateProposal,
   getProposalsByRfpId,
+  getAllProposals,
 } from "../services/proposal.service";
 import { ApiResponse } from "../utils/apiResponse";
 
@@ -65,6 +66,23 @@ export const getProposalsForRfpController = async (
       "Proposals fetched successfully",
       proposals
     );
+  } catch (error: any) {
+    return ApiResponse(
+      res,
+      500,
+      false,
+      error.message || "Failed to fetch proposals"
+    );
+  }
+};
+
+export const getAllProposalsController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const proposals = await getAllProposals();
+    return ApiResponse(res, 200, true, "Proposals fetched", proposals);
   } catch (error: any) {
     return ApiResponse(
       res,
