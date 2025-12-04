@@ -16,6 +16,7 @@ import ComparePage from "./pages/ComparePage";
 import VendorListPage from "./pages/VendorListPage";
 import VendorCreatePage from "./pages/VendorCreatePage";
 import ProposalListPage from "./pages/ProposalListPage";
+import ProposalPage from "./pages/ProposalPage";
 
 const App = () => {
   return (
@@ -23,12 +24,11 @@ const App = () => {
       <Navbar />
 
       <div className="flex flex-col min-h-screen">
-        {/* Page Content */}
         <div className="flex-grow p-6">
           <Routes>
             <Route path="/" element={<DashboardPage />} />
-            {/* RFP Routes */}
             <Route path="/rfps" element={<RfpListPage />} />
+            <Route path="/proposals" element={<ProposalPage />} />
             <Route path="/rfps/create" element={<RfpCreatePage />} />
             <Route path="/rfps/:rfpId" element={<RfpDetailsPage />} />
             <Route path="/rfps/:rfpId/compare" element={<ComparePage />} />

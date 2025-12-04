@@ -9,6 +9,7 @@ import type {
 import {
   parseProposalFromEmailService,
   getProposalsByRfpIdService,
+  getAllProposalsService,
 } from "../../services/proposal.service";
 
 interface ProposalState {
@@ -25,6 +26,7 @@ const initialState: ProposalState = {
 
 // ---------------------- ASYNC THUNKS ----------------------
 
+// Parse email and create proposal
 export const parseProposalFromEmail = createAsyncThunk(
   "proposal/parseEmail",
   async (payload: ParseProposalPayload, { rejectWithValue }) => {
@@ -42,6 +44,7 @@ export const parseProposalFromEmail = createAsyncThunk(
   }
 );
 
+// Fetch proposals for a specific RFP
 export const fetchProposalsByRfpId = createAsyncThunk(
   "proposal/fetchByRfp",
   async (rfpId: string, { rejectWithValue }) => {
@@ -59,7 +62,23 @@ export const fetchProposalsByRfpId = createAsyncThunk(
   }
 );
 
-// ---------------------- SLICE ----------------------
+// 🔥 Fetch ALL proposals in system
+export const fetchAllProposals = createAsyncThunk(
+  "proposal/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const proposals = await getAllProposalsService();
+      return proposals;
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        return rejectWithValue(
+          err.response?.data?.message ?? "Failed to fetch proposals"
+        );
+      }
+      return rejectWithValue("Failed to fetch proposals");
+    }
+  }
+);
 
 const proposalSlice = createSlice({
   name: "proposal",
@@ -103,11 +122,26 @@ const proposalSlice = createSlice({
       .addCase(fetchProposalsByRfpId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+
+      // 🔥 Fetch All Proposals
+      .addCase(fetchAllProposals.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchAllProposals.fulfilled,
+        (state, action: PayloadAction<Proposal[]>) => {
+          state.loading = false;
+          state.proposals = action.payload;
+        }
+      )
+      .addCase(fetchAllProposals.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
-
-// ---------------------- EXPORTS ----------------------
 
 export const { clearProposals } = proposalSlice.actions;
 export default proposalSlice.reducer;

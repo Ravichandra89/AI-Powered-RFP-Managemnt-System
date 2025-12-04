@@ -14,3 +14,8 @@ export const getProposalsByRfpIdService = async (
   const res = await api.get(`/api/v1/proposals/${rfpId}`);
   return res.data.data;
 };
+
+export const getAllProposalsService = async () => {
+  const res = await api.get(`/proposals`);
+  return res.data.data;
+};

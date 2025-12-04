@@ -23,7 +23,6 @@ const ProposalCard = ({ proposal, vendorName }: ProposalCardProps) => {
       </CardHeader>
 
       <CardContent className="space-y-4 text-sm">
-
         {proposal.summary && (
           <p className="italic text-gray-700 border-l-4 border-gray-300 pl-2">
             {proposal.summary}
@@ -50,7 +49,6 @@ const ProposalCard = ({ proposal, vendorName }: ProposalCardProps) => {
           </p>
         </div>
 
-
         <div>
           <h3 className="font-semibold mb-2">Proposed Items</h3>
           <div className="space-y-2">
@@ -73,7 +71,6 @@ const ProposalCard = ({ proposal, vendorName }: ProposalCardProps) => {
             ))}
           </div>
         </div>
-
 
         {proposal.parsedAiJson && (
           <details className="mt-3 cursor-pointer">
