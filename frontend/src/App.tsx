@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
+import DashboardPage from "./pages/DashboardPage";
+import RfpListPage from "./pages/RfpListPage";
+import RfpCreatePage from "./pages/RfpCreatePage";
+import RfpDetailsPage from "./pages/RfpDetailsPage";
+import ComparePage from "./pages/ComparePage";
+import VendorListPage from "./pages/VendorListPage";
+import VendorCreatePage from "./pages/VendorCreatePage";
+import ProposalListPage from "./pages/ProposalListPage";
+
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Navbar />
 
-export default App
+      <div className="flex flex-col min-h-screen">
+        {/* Page Content */}
+        <div className="flex-grow p-6">
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            {/* RFP Routes */}
+            <Route path="/rfps" element={<RfpListPage />} />
+            <Route path="/rfps/create" element={<RfpCreatePage />} />
+            <Route path="/rfps/:rfpId" element={<RfpDetailsPage />} />
+            <Route path="/rfps/:rfpId/compare" element={<ComparePage />} />
+            <Route
+              path="/rfps/:rfpId/proposals"
+              element={<ProposalListPage />}
+            />
+            {/* Vendor Routes */}
+            <Route path="/vendors" element={<VendorListPage />} />
+            <Route path="/vendors/new" element={<VendorCreatePage />} />{" "}
+            {/* 👈 FIXED */}
+            {/* Wildcard Redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+
+        {/* Footer pinned at bottom */}
+        <Footer />
+      </div>
+    </Router>
+  );
+};
+
+export default App;
