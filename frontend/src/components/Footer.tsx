@@ -1,66 +1,72 @@
-import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 import { Github, Mail, ExternalLink } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="w-full mt-10">
-      <Card className="rounded-none border-t bg-gray-50 shadow-none">
-        <CardContent className="max-w-6xl mx-auto py-8 px-4">
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Brand */}
+    <footer className="w-full bg-gray-950 text-gray-300 mt-16 border-t border-gray-800">
+      <Card className="bg-transparent border-none rounded-none shadow-none">
+        <CardContent className="max-w-6xl mx-auto py-12 px-6">
+          <div className="grid md:grid-cols-3 gap-10">
+            {/* BRAND */}
             <div>
-              <h2 className="text-lg font-bold tracking-tight">
+              <h2 className="text-xl font-bold text-white">
                 AI-Powered RFP System
               </h2>
-              <p className="text-sm text-gray-600 mt-2">
-                Streamline procurement with AI — create RFPs, parse proposals,
-                compare vendors & make data-driven decisions effortlessly.
+              <p className="text-sm text-gray-400 mt-3 leading-relaxed">
+                Automate procurement workflows with AI — create RFPs, manage
+                vendors, parse proposals, and compare bids effortlessly.
               </p>
             </div>
 
-            {/* Navigation */}
+            {/* QUICK LINKS */}
             <div>
-              <h3 className="text-sm font-semibold uppercase text-gray-700 mb-2">
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
                 Quick Links
               </h3>
-              <div className="flex flex-col space-y-2">
+
+              <ul className="space-y-3 text-sm">
                 <FooterLink to="/rfps">Manage RFPs</FooterLink>
                 <FooterLink to="/vendors">Vendors</FooterLink>
                 <FooterLink to="/rfps/create">Create RFP</FooterLink>
-                <FooterLink to="/rfps/1/compare">Compare Proposals</FooterLink>
-              </div>
+                <FooterLink to="/proposals">All Proposals</FooterLink>
+              </ul>
             </div>
 
-            {/* Contact / Social */}
+            {/* CONTACT */}
             <div>
-              <h3 className="text-sm font-semibold uppercase text-gray-700 mb-2">
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
                 Connect
               </h3>
-              <div className="flex flex-col space-y-3 text-sm text-gray-700">
+
+              <ul className="space-y-3 text-sm">
                 <FooterAnchor href="mailto:support@rfp.ai">
                   <Mail className="w-4 h-4" /> support@rfp.ai
                 </FooterAnchor>
+
                 <FooterAnchor href="https://github.com" target="_blank">
                   <Github className="w-4 h-4" /> GitHub Repository
-                  <ExternalLink className="w-3 h-3 ml-1" />
+                  <ExternalLink className="w-3 h-3" />
                 </FooterAnchor>
-              </div>
+              </ul>
             </div>
           </div>
 
-          <Separator className="my-6" />
+          {/* Separator */}
+          <Separator className="my-8 bg-gray-800" />
 
-          <div className="text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} AI-Powered RFP System — All rights
+          <p className="text-center text-gray-500 text-sm">
+            © {new Date().getFullYear()} AI-Powered RFP System · All rights
             reserved.
-          </div>
+          </p>
         </CardContent>
       </Card>
     </footer>
   );
 };
+
+/* ---------- Reusable Components ---------- */
 
 const FooterLink = ({
   to,
@@ -69,9 +75,15 @@ const FooterLink = ({
   to: string;
   children: React.ReactNode;
 }) => (
-  <Link to={to} className="hover:text-blue-600 transition-colors text-gray-700">
-    {children}
-  </Link>
+  <li>
+    <Link
+      to={to}
+      className="hover:text-white transition flex items-center gap-2"
+    >
+      <span className="h-px w-0 bg-blue-500 group-hover:w-4 transition-all"></span>
+      {children}
+    </Link>
+  </li>
 );
 
 const FooterAnchor = ({
@@ -83,14 +95,16 @@ const FooterAnchor = ({
   children: React.ReactNode;
   target?: string;
 }) => (
-  <a
-    href={href}
-    target={target}
-    className="flex items-center hover:text-blue-600 transition-colors"
-    rel="noreferrer"
-  >
-    {children}
-  </a>
+  <li>
+    <a
+      href={href}
+      target={target}
+      rel="noreferrer"
+      className="hover:text-white transition flex items-center gap-2"
+    >
+      {children}
+    </a>
+  </li>
 );
 
 export default Footer;
